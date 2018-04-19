@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Event detail</title>
+</head>
+<body>
+    <a href="/events">Events Dashboard</a>
+    <div class="col-md-6">
+        <H2><%= @current_event.name%></H2>
+        <P>Host: <%=@current_event.user.first_name%> <%=@current_event.user.last_name%></P>
+        <p>Date: <%=@current_event.date.strftime('%b %d, %Y')%></p>
+        <p>Location: <%=@current_event.city%> , <%=@current_event.state%></p>
+        <p>People who are joining the event: <%=@current_event.joiners.length%></p>
+        <table class="table table-bordered">
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>State</th>
+                <% @current_event.joiners.each do |user| %>
+            </tr>
+            <tr>
+                <td><%=user.first_name%> <%=user.last_name%></td>
+                <td><%=user.city%></td>
+                <td><%=user.state%></td>
+            </tr>
+          <% end %>      
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4>Discussion about this event</h4>
+        <div style="width:400px;height:400px;border-style: solid; border-width: 3px;overflow:scroll;" >
+            <% @current_event.comments.each do |comment|%>
+            <%=comment.user.first_name%> says : <%=comment.content%>
+            <% if comment.user.id == session[:user_id] %>
+            <a href ="/comments/<%=@current_event.id%>/<%=comment.id%>" data-method="delete">Delete</a>
+            <% end %>
+            <br>
+            <%end%>
+        </div>
+        <p>Add Comment:</p>
+        <form action="/comments/<%=@current_event.id%>" method="post">
+            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <input type="text" name="comment[content]" k><br>
+            <input type="hidden" name="comment[user_id]" value="<%=@current_user.id%>">
+            <input type="hidden" name="comment[event_id]" value="<%=@current_event.id%>">
+            <input type="submit" value="Submit Comments">
+        </form>
+    <div>
+</body>
+</html>
